@@ -6,12 +6,21 @@ public class AudioInfo {
     private String path;
 
     public AudioInfo() {
-        this("No title", 0);
+        this("No title");
+    }
+
+    public AudioInfo(String title) {
+        this(title, 0);
     }
 
     public AudioInfo(String title, int duration) {
+        this(title, duration, "");
+    }
+
+    public AudioInfo(String title, int duration, String path) {
         this.title = title;
         this.duration = duration;
+        this.path = path;
     }
 
     public String getPath() {

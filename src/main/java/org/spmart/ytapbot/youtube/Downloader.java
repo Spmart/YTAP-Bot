@@ -74,9 +74,13 @@ public class Downloader {
         if (isDownloaded(processOutput)) {
            info.setTitle(processOutput.get(0));
            info.setPath(downloadPath);
-           info.setDuration(0); //TODO: Convert to seconds
+           info.setDuration(convertDurationToSeconds(processOutput.get(1)));
         }
         return info;
+    }
+
+    private int convertDurationToSeconds(String duration) {  // TODO: Implement this
+        return 0;
     }
 
     private boolean isDownloaded(List<String> processOutput) {

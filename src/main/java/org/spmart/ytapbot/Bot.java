@@ -26,7 +26,9 @@ public class Bot extends TelegramLongPollingBot {
     private static final String START_MESSAGE = "Hello friend! Send me a YouTube link! I'll return you an audio from it";
 
     public void onUpdateReceived(Update update) {
-        processMessage(update);
+        new Thread(() -> {
+            processMessage(update);
+        }).start();
     }
 
     public String getBotUsername() {
@@ -38,29 +40,27 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void processMessage(Update update) {
-        new Thread(() -> {
-            // We check if the update has a message and the message has text
-            if (update.hasMessage() && update.getMessage().hasText()) {
-                Long chatId = update.getMessage().getChatId();
-                Integer messageId = update.getMessage().getMessageId();  // is unique, incremental
-                String inMessageText = update.getMessage().getText();
+        // We check if the update has a message and the message has text
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            Long chatId = update.getMessage().getChatId();
+            Integer messageId = update.getMessage().getMessageId();  // is unique, incremental
+            String inMessageText = update.getMessage().getText();
 
-                UrlValidator validator = new UrlValidator();
-                UrlNormalizer normalizer = new UrlNormalizer();
+            UrlValidator validator = new UrlValidator();
+            UrlNormalizer normalizer = new UrlNormalizer();
 
-                // logic: try to cut args only in url, we should't touch plain text
-                if (validator.isUrl(inMessageText) &&
-                        validator.isValidYouTubeVideoUrl(normalizer.deleteArgsFromYouTubeUrl(inMessageText))) {
-                    send(chatId, "It's a YouTube link! Downloading...");
-                    AudioInfo info = downloadAudio(messageId, normalizer.deleteArgsFromYouTubeUrl(inMessageText));
-                    send(chatId, info);
-                } else if (inMessageText.equals("/start")) {
-                    send(chatId, START_MESSAGE);
-                } else {
-                    send(chatId, "It's NOT a YouTube link! Try again.");
-                }
+            // logic: try to cut args only in url, we should't touch plain text
+            if (validator.isUrl(inMessageText) &&
+                    validator.isValidYouTubeVideoUrl(normalizer.deleteArgsFromYouTubeUrl(inMessageText))) {
+                send(chatId, "It's a YouTube link! Downloading...");
+                AudioInfo info = downloadAudio(messageId, normalizer.deleteArgsFromYouTubeUrl(inMessageText));
+                send(chatId, info);
+            } else if (inMessageText.equals("/start")) {
+                send(chatId, START_MESSAGE);
+            } else {
+                send(chatId, "It's NOT a YouTube link! Try again.");
             }
-        }).start();
+        }
     }
 
     private String getTextFromFile(String path) {
