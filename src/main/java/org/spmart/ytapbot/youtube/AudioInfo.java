@@ -1,16 +1,25 @@
 package org.spmart.ytapbot.youtube;
 
-public class VideoInfo {
+public class AudioInfo {
     private String title;
     private int duration;
+    private String path;
 
-    public VideoInfo() {
+    public AudioInfo() {
         this("No title", 0);
     }
 
-    public VideoInfo(String title, int duration) {
+    public AudioInfo(String title, int duration) {
         this.title = title;
         this.duration = duration;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getTitle() {

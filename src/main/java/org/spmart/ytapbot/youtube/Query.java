@@ -43,7 +43,7 @@ public class Query {
         for (String key : options.keySet()) {
             String value = options.get(key);
             stringBuilder.append(String.format("%s ", key));
-            if (!value.isEmpty()) { // if value is not empty, than wrap it with '' and append
+            if (!value.isEmpty()) { // if value is not empty, then wrap it with '' and append
                 stringBuilder.append(String.format("'%s' ", value)); // wrap args like '~/Downloads/123456.%(ext)s'
             }
         }

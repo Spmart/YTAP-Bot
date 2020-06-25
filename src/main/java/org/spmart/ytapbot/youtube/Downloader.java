@@ -53,8 +53,6 @@ public class Downloader {
         ProcessExecutor processExecutor = new ProcessExecutor();
         List<String> processOutput = processExecutor.runProcess(cmdLine);
 
-        Logger logger = Logger.INSTANCE;
-
         if (isDownloaded(processOutput)) {
             return processOutput.get(0);
         } else {
@@ -62,7 +60,7 @@ public class Downloader {
         }
     }
 
-    public VideoInfo getVideoInfo() {
+    public AudioInfo getAudioInfo() {
         Query query = new Query(youTubeLink);
         query.setOption(GET_TITLE_OPTION);
         query.setOption(GET_DURATION_OPTION);
@@ -72,9 +70,10 @@ public class Downloader {
         ProcessExecutor processExecutor = new ProcessExecutor();
         List<String> processOutput = processExecutor.runProcess(cmdLine);
 
-        VideoInfo info = new VideoInfo();
+        AudioInfo info = new AudioInfo();
         if (isDownloaded(processOutput)) {
            info.setTitle(processOutput.get(0));
+           info.setPath(downloadPath);
            info.setDuration(0); //TODO: Convert to seconds
         }
         return info;
