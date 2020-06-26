@@ -79,8 +79,15 @@ public class Downloader {
         return info;
     }
 
-    private int convertDurationToSeconds(String duration) {  // TODO: Implement this
-        return 0;
+    private int convertDurationToSeconds(String duration) {
+        String[] durationHms = duration.split(":"); //Hours, minutes, seconds
+        return switch (durationHms.length) {
+            case 1 -> Integer.parseInt(durationHms[0]);
+            case 2 -> Integer.parseInt(durationHms[0]) * 60 + Integer.parseInt(durationHms[1]);
+            case 3 -> Integer.parseInt(durationHms[0]) * 3600
+                    + Integer.parseInt(durationHms[1]) * 60 + Integer.parseInt(durationHms[2]);
+            default -> 0;
+        };
     }
 
     private boolean isDownloaded(List<String> processOutput) {

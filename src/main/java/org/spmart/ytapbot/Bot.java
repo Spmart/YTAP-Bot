@@ -97,6 +97,7 @@ public class Bot extends TelegramLongPollingBot {
             SendAudio audio = new SendAudio();
             audio
                     .setTitle(info.getTitle())
+                    .setDuration(info.getDuration())
                     .setCaption(info.getTitle())
                     .setChatId(chatId)
                     .setAudio(audioFile);
