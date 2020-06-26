@@ -22,6 +22,7 @@ public class Bot extends TelegramLongPollingBot {
 
     private static final String PATH_TO_TOKEN = "token.txt";  // Token from @BotFather
     private static final String PATH_TO_NAME = "name.txt";  // Bot username, for ex: ytap_bot
+    private static final int MAX_AUDIO_DURATION = 3000;  // in seconds
 
     private static final String START_MESSAGE = "Hello friend! Send me a YouTube link! I'll return you an audio from it";
 
@@ -52,9 +53,20 @@ public class Bot extends TelegramLongPollingBot {
             // logic: try to cut args only in url, we should't touch plain text
             if (validator.isUrl(inMessageText) &&
                     validator.isValidYouTubeVideoUrl(normalizer.deleteArgsFromYouTubeUrl(inMessageText))) {
-                send(chatId, "It's a YouTube link! Downloading...");
-                AudioInfo info = downloadAudio(messageId, normalizer.deleteArgsFromYouTubeUrl(inMessageText));
-                send(chatId, info);
+
+                String normalizedUrl = normalizer.deleteArgsFromYouTubeUrl(inMessageText);
+                String audioPath = String.format("./audio/%s.m4a", messageId);
+                Downloader downloader = new Downloader(normalizedUrl, audioPath);
+                AudioInfo info = downloader.getAudioInfo();
+
+                if (info.getDuration() > MAX_AUDIO_DURATION) {
+                    send(chatId, "It's too long video, I don't know how to extract such long audio yet.");
+                } else {
+                    send(chatId, "It's a YouTube link! Downloading...");
+                    downloader.getAudio();
+                    send(chatId, info);
+                }
+                
             } else if (inMessageText.equals("/start")) {
                 send(chatId, START_MESSAGE);
             } else {
@@ -71,14 +83,6 @@ public class Bot extends TelegramLongPollingBot {
             Logger.INSTANCE.write(String.format("File not found! %s", e.getMessage()));
         }
         return content.trim();  // Trim string for spaces or new lines
-    }
-
-    private AudioInfo downloadAudio(int messageId, String url) {
-        String audioFilePath = String.format("./audio/%s.m4a", messageId);
-        Downloader downloader = new Downloader(url, audioFilePath);
-        //String audioTitle = downloader.getTitle();
-        downloader.getAudio();
-        return downloader.getAudioInfo();
     }
 
     private void send(long chatId, String text) {
@@ -105,10 +109,20 @@ public class Bot extends TelegramLongPollingBot {
                 execute(audio);
             } catch (TelegramApiException e) {
                 Logger.INSTANCE.write(String.format("Error! Can't send an audio! %s", e.getMessage()));
+                send(chatId, "Can't send an audio. May be, file is bigger than 50 MB");  // Double check. If Telegram API stops upload
             }
         } else {
             send(chatId, "Can't download the audio :( It's a broken link or not a video.");
         }
+    }
+
+    @Deprecated
+    private AudioInfo downloadAudio(int messageId, String url) {
+        String audioFilePath = String.format("./audio/%s.m4a", messageId);
+        Downloader downloader = new Downloader(url, audioFilePath);
+        //String audioTitle = downloader.getTitle();
+        downloader.getAudio();
+        return downloader.getAudioInfo();
     }
 
     @Deprecated
