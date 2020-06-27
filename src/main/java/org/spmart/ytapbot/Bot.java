@@ -27,9 +27,7 @@ public class Bot extends TelegramLongPollingBot {
     private static final String START_MESSAGE = "Hello friend! Send me a YouTube link! I'll return you an audio from it";
 
     public void onUpdateReceived(Update update) {
-        new Thread(() -> {
-            processMessage(update);
-        }).start();
+        new Thread(() -> processMessage(update)).start();
     }
 
     public String getBotUsername() {
@@ -62,11 +60,11 @@ public class Bot extends TelegramLongPollingBot {
                 if (info.getDuration() > MAX_AUDIO_DURATION) {
                     send(chatId, "It's too long video, I don't know how to extract such long audio yet.");
                 } else {
-                    send(chatId, "It's a YouTube link! Downloading...");
+                    send(chatId, "Downloading...");
                     downloader.getAudio();
                     send(chatId, info);
                 }
-                
+
             } else if (inMessageText.equals("/start")) {
                 send(chatId, START_MESSAGE);
             } else {
