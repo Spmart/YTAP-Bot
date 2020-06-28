@@ -26,6 +26,10 @@ public class Bot extends TelegramLongPollingBot {
 
     private static final String START_MESSAGE = "Hello friend! Send me a YouTube link! I'll return you an audio from it";
 
+    /**
+     * If bot receiving a message, starts new thread to process it.
+     * @param update Update from Telegram Bot API.
+     */
     public void onUpdateReceived(Update update) {
         new Thread(() -> processMessage(update)).start();
     }
@@ -38,6 +42,10 @@ public class Bot extends TelegramLongPollingBot {
         return getTextFromFile(PATH_TO_TOKEN);
     }
 
+    /**
+     * Process the message that user sent to the bot
+     * @param update Update from Telegram Bot API.
+     */
     private void processMessage(Update update) {
         // We check if the update has a message and the message has text
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -83,6 +91,11 @@ public class Bot extends TelegramLongPollingBot {
         return content.trim();  // Trim string for spaces or new lines
     }
 
+    /**
+     * Sends a text message to user.
+     * @param chatId Unique ID that identifies the chat to the user.
+     * @param text Text message.
+     */
     private void send(long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId).setText(text);
@@ -93,6 +106,11 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Sends a message with an audio record.
+     * @param chatId Unique ID that identifies the chat to the user.
+     * @param info AudioInfo object that contains title, duration, caption and audio path
+     */
     private void send(long chatId, AudioInfo info) {
         File audioFile = new File(info.getPath());
         if (audioFile.exists()) {
@@ -118,7 +136,6 @@ public class Bot extends TelegramLongPollingBot {
     private AudioInfo downloadAudio(int messageId, String url) {
         String audioFilePath = String.format("./audio/%s.m4a", messageId);
         Downloader downloader = new Downloader(url, audioFilePath);
-        //String audioTitle = downloader.getTitle();
         downloader.getAudio();
         return downloader.getAudioInfo();
     }

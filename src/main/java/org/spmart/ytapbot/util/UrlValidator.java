@@ -8,9 +8,9 @@ public class UrlValidator {
 
     public boolean isUrl(String url) {
         try {
-            URL u = new URL(url);
+            new URL(url);  // if string is not URL, a wild exception appears!
             return true;
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {  // gotta catch 'em all!
             return false;
         }
     }

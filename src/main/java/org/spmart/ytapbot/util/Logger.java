@@ -42,7 +42,7 @@ public enum Logger {
 
     /**
      * Get date and time in nice format like:
-     * Wed, 10 Jun 2020 09:26:04 +0300 CRABBOT IS STARTED!
+     * Wed, 10 Jun 2020 09:26:04 +0300 YTAP IS STARTED!
      * @return Current local date/time.
      */
     private String getTimeStamp() {

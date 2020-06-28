@@ -6,7 +6,7 @@ import org.spmart.ytapbot.util.ProcessExecutor;
 import java.util.List;
 
 public class Downloader {
-    private final String youTubeLink;
+    private final String youTubeUrl;
     private final String downloadPath;
 
     private final String FILE_TYPE_KEY = "-f";
@@ -16,15 +16,22 @@ public class Downloader {
     private final String GET_TITLE_OPTION = "--get-title";
     private final String GET_DURATION_OPTION = "--get-duration";
 
-    public Downloader(String youTubeLink, String downloadPath) {
-        this.youTubeLink = youTubeLink;
+    /**
+     * Prepares download. Can download information about audio and audio itself.
+     * @param youTubeUrl Valid URL to YouTube video. Should be https://www.youtube.com/watch?v=xxx or https://youtu.be/xxx
+     * @param downloadPath Path to output file.
+     */
+    public Downloader(String youTubeUrl, String downloadPath) {
+        this.youTubeUrl = youTubeUrl;
         this.downloadPath = downloadPath;
     }
 
-// For download audio only I can use: youtube-dl -f 'bestaudio[ext=m4a]' -o '~/Downloads/123456.%(ext)s' 'http://youtu.be/hTvJoYnpeRQ'
-
+    /**
+     * Downloads an audio.
+     * @return True if audio is downloaded. False if the audio download is failed
+     */
     public boolean getAudio() {
-        Query query = new Query(youTubeLink);
+        Query query = new Query(youTubeUrl);
         query.setOption(FILE_TYPE_KEY, ONLY_AUDIO_M4A_OPTION);
         query.setOption(OUTPUT_KEY, downloadPath);
 
@@ -36,7 +43,7 @@ public class Downloader {
         Logger logger = Logger.INSTANCE;
 
         if (!isDownloaded(processOutput)) { // if process error code != 0
-            logger.write(String.format("Download %s is failed. Youtube-dl output:", youTubeLink));
+            logger.write(String.format("Download %s is failed. Youtube-dl output:", youTubeUrl));
             processOutput.forEach(logger::write); // Write all youtube-dl out into a bot log
             return false;
         }
@@ -45,7 +52,7 @@ public class Downloader {
 
     @Deprecated
     public String getTitle() {
-        Query query = new Query(youTubeLink);
+        Query query = new Query(youTubeUrl);
         query.setOption(GET_TITLE_OPTION);
 
         String cmdLine = query.toString();
@@ -60,8 +67,12 @@ public class Downloader {
         }
     }
 
+    /**
+     * Sends one query to YouTube API to grab all information about audio.
+     * @return AudioInfo instance that contains title and duration.
+     */
     public AudioInfo getAudioInfo() {
-        Query query = new Query(youTubeLink);
+        Query query = new Query(youTubeUrl);
         query.setOption(GET_TITLE_OPTION);
         query.setOption(GET_DURATION_OPTION);
 
@@ -79,6 +90,10 @@ public class Downloader {
         return info;
     }
 
+    /**
+     * @param duration Duration in HH:MM:SS, MM:SS or SS format.
+     * @return Duration in seconds.
+     */
     private int convertDurationToSeconds(String duration) {
         String[] durationHms = duration.split(":"); //Hours, minutes, seconds
         return switch (durationHms.length) {

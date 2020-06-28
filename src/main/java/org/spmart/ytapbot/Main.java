@@ -13,11 +13,11 @@ public class Main {
 
         Logger logger = Logger.INSTANCE;
 
-        logger.write("YOUTUBE AUDIO PODCASTER IS STARTED!\n");
+        logger.write("YOUTUBE AUDIO PODCASTER IS STARTED!");
         try {
             telegramBotsApi.registerBot(new Bot());
         } catch (TelegramApiException e) {
-            logger.write("Can't start! Check your network connection.\n");
+            logger.write("Can't start! Check your network connection.");
             e.printStackTrace();
         }
     }

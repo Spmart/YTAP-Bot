@@ -5,6 +5,9 @@ public class AudioInfo {
     private int duration;
     private String path;
 
+    /**
+     * Info about audio that received from youtube-dl.
+     */
     public AudioInfo() {
         this("No title");
     }
@@ -13,10 +16,21 @@ public class AudioInfo {
         this(title, 0);
     }
 
+    /**
+     * Info about audio that received from youtube-dl.
+     * @param title Audio title.
+     * @param duration Audio duration in seconds.
+     */
     public AudioInfo(String title, int duration) {
         this(title, duration, "");
     }
 
+    /**
+     * Info about audio that received from youtube-dl.
+     * @param title Audio title.
+     * @param duration Audio duration in seconds.
+     * @param path Path to audio file. Could be relative or absolute.
+     */
     public AudioInfo(String title, int duration, String path) {
         this.title = title;
         this.duration = duration;
