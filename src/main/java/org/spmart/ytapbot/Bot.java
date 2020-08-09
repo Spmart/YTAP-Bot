@@ -5,6 +5,7 @@ import org.spmart.ytapbot.util.UrlValidator;
 import org.spmart.ytapbot.util.Logger;
 
 import org.spmart.ytapbot.youtube.AudioInfo;
+import org.spmart.ytapbot.youtube.AudioSlicer;
 import org.spmart.ytapbot.youtube.Downloader;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
@@ -17,12 +18,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
 
     private static final String PATH_TO_TOKEN = "token.txt";  // Token from @BotFather
     private static final String PATH_TO_NAME = "name.txt";  // Bot username, for ex: ytap_bot
-    private static final int MAX_AUDIO_DURATION = 3000;  // in seconds
+    private static final int MAX_AUDIO_DURATION = 18000;  // 5 hours in seconds
+    private static final int MAX_AUDIO_CHUNK_DURATION = 3000; // 50 minutes in seconds
 
     private static final String START_MESSAGE = "Hello friend! Send me a YouTube link! I'll return you an audio from it";
 
@@ -66,7 +69,13 @@ public class Bot extends TelegramLongPollingBot {
                 AudioInfo info = downloader.getAudioInfo();
 
                 if (info.getDuration() > MAX_AUDIO_DURATION) {
-                    send(chatId, "It's too long video, I don't know how to extract such long audio yet.");
+                    send(chatId, "It's too long video! My maximum is 5 hours.");
+                } else if (info.getDuration() > MAX_AUDIO_CHUNK_DURATION) {
+                    send(chatId, "Downloading and slicing for parts...");
+                    downloader.getAudio();
+                    AudioSlicer slicer = new AudioSlicer(info);
+                    List<AudioInfo> partsInfo = slicer.getAudioParts(MAX_AUDIO_CHUNK_DURATION);
+                    sendAll(chatId, partsInfo);
                 } else {
                     send(chatId, "Downloading...");
                     downloader.getAudio();
@@ -109,7 +118,7 @@ public class Bot extends TelegramLongPollingBot {
     /**
      * Sends a message with an audio record.
      * @param chatId Unique ID that identifies the chat to the user.
-     * @param info AudioInfo object that contains title, duration, caption and audio path
+     * @param info AudioInfo object that contains title, duration, caption and audio path.
      */
     private void send(long chatId, AudioInfo info) {
         File audioFile = new File(info.getPath());
@@ -129,6 +138,17 @@ public class Bot extends TelegramLongPollingBot {
             }
         } else {
             send(chatId, "Can't download the audio :( It's a broken link or not a video.");
+        }
+    }
+
+    /**
+     * Sends all audio. Each audio in a separate message.
+     * @param chatId Unique ID that identifies the chat to the user.
+     * @param infos Collection with AudioInfo objects that contains title, duration, caption and audio path.
+     */
+    private void sendAll(long chatId, List<AudioInfo> infos) {
+        for (AudioInfo info : infos) {
+            send(chatId, info);
         }
     }
 

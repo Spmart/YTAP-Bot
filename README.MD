@@ -32,8 +32,8 @@ Telegram bot that downloads audio from YouTube and sends it to the user as an au
 The end result should be something like this:
 ![Directory testthings isn't required](https://i.imgur.com/XghsLqB.png)
 
-5\. Install youtube-dl. You can do that from system package manager, but packages may be quite old (except *brew* on Mac and *pacman* in Arch). [Here](https://github.com/ytdl-org/youtube-dl#installation) is a better way to install a lastest version.
-*Make shure, that you can call youtube-dl from /usr/local/bin/youtube-dl. If not, [create a symlink](https://askubuntu.com/questions/56339/how-to-create-a-soft-or-symbolic-link).*
+5\. Install youtube-dl. You can do that from system package manager, but packages may be quite old (except *brew* on Mac and *pacman* in Arch). [Here](https://github.com/ytdl-org/youtube-dl#installation) is a better way to install a latest version.
+*Make sure, that you can call youtube-dl from /usr/local/bin/youtube-dl. If not, [create a symlink](https://askubuntu.com/questions/56339/how-to-create-a-soft-or-symbolic-link).*
 
 6\. Install FFmpeg. You can use your system package manager here.
 

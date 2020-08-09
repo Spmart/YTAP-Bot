@@ -6,8 +6,8 @@ import org.spmart.ytapbot.util.ProcessExecutor;
 import java.util.List;
 
 public class Downloader {
-    private final String youTubeUrl;
-    private final String downloadPath;
+    private final String YOUTUBE_URL;
+    private final String DOWNLOAD_PATH;
 
     private final String FILE_TYPE_KEY = "-f";
     private final String OUTPUT_KEY = "-o";
@@ -22,18 +22,18 @@ public class Downloader {
      * @param downloadPath Path to output file.
      */
     public Downloader(String youTubeUrl, String downloadPath) {
-        this.youTubeUrl = youTubeUrl;
-        this.downloadPath = downloadPath;
+        this.YOUTUBE_URL = youTubeUrl;
+        this.DOWNLOAD_PATH = downloadPath;
     }
 
     /**
-     * Downloads an audio.
+     * Downloads an audio. No duration or any other check.
      * @return True if audio is downloaded. False if the audio download is failed
      */
     public boolean getAudio() {
-        Query query = new Query(youTubeUrl);
+        Query query = new Query(YOUTUBE_URL);
         query.setOption(FILE_TYPE_KEY, ONLY_AUDIO_M4A_OPTION);
-        query.setOption(OUTPUT_KEY, downloadPath);
+        query.setOption(OUTPUT_KEY, DOWNLOAD_PATH);
 
         String cmdLine = query.toString();
 
@@ -43,7 +43,7 @@ public class Downloader {
         Logger logger = Logger.INSTANCE;
 
         if (!isDownloaded(processOutput)) { // if process error code != 0
-            logger.write(String.format("Download %s is failed. Youtube-dl output:", youTubeUrl));
+            logger.write(String.format("Download %s is failed. Youtube-dl output:", YOUTUBE_URL));
             processOutput.forEach(logger::write); // Write all youtube-dl out into a bot log
             return false;
         }
@@ -52,7 +52,7 @@ public class Downloader {
 
     @Deprecated
     public String getTitle() {
-        Query query = new Query(youTubeUrl);
+        Query query = new Query(YOUTUBE_URL);
         query.setOption(GET_TITLE_OPTION);
 
         String cmdLine = query.toString();
@@ -72,7 +72,7 @@ public class Downloader {
      * @return AudioInfo instance that contains title and duration.
      */
     public AudioInfo getAudioInfo() {
-        Query query = new Query(youTubeUrl);
+        Query query = new Query(YOUTUBE_URL);
         query.setOption(GET_TITLE_OPTION);
         query.setOption(GET_DURATION_OPTION);
 
@@ -84,7 +84,7 @@ public class Downloader {
         AudioInfo info = new AudioInfo();
         if (isDownloaded(processOutput)) {
            info.setTitle(processOutput.get(0));
-           info.setPath(downloadPath);
+           info.setPath(DOWNLOAD_PATH);
            info.setDuration(convertDurationToSeconds(processOutput.get(1)));
         }
         return info;
