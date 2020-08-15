@@ -27,7 +27,7 @@ public class Bot extends TelegramLongPollingBot {
     private static final int MAX_AUDIO_DURATION = 18000;  // 5 hours in seconds
     private static final int MAX_AUDIO_CHUNK_DURATION = 3000; // 50 minutes in seconds
 
-    private static final String START_MESSAGE = "Hello friend! Send me a YouTube link! I'll return you an audio from it";
+    private static final String START_MESSAGE = "Hello friend! Send me a YouTube link! I'll return you an audio from it.";
 
     /**
      * If bot receiving a message, starts new thread to process it.
@@ -59,7 +59,7 @@ public class Bot extends TelegramLongPollingBot {
             UrlValidator validator = new UrlValidator();
             UrlNormalizer normalizer = new UrlNormalizer();
 
-            // logic: try to cut args only in url, we should't touch plain text
+            // logic: try to cut args only in url, we shouldn't touch plain text
             if (validator.isUrl(inMessageText) &&
                     validator.isValidYouTubeVideoUrl(normalizer.deleteArgsFromYouTubeUrl(inMessageText))) {
 
@@ -137,7 +137,7 @@ public class Bot extends TelegramLongPollingBot {
                 send(chatId, "Can't send an audio. May be, file is bigger than 50 MB");  // Double check. If Telegram API stops upload
             }
         } else {
-            send(chatId, "Can't download the audio :( It's a broken link or not a video.");
+            send(chatId, "Error downloading audio :( Maybe YouTube marked the video as unacceptable for some users or the link to the video is broken.");
         }
     }
 
@@ -150,36 +150,5 @@ public class Bot extends TelegramLongPollingBot {
         for (AudioInfo info : infos) {
             send(chatId, info);
         }
-    }
-
-    @Deprecated
-    private AudioInfo downloadAudio(int messageId, String url) {
-        String audioFilePath = String.format("./audio/%s.m4a", messageId);
-        Downloader downloader = new Downloader(url, audioFilePath);
-        downloader.getAudio();
-        return downloader.getAudioInfo();
-    }
-
-    @Deprecated
-    private void send(SendMessage message) {
-        try {
-            execute(message); // Call method to send the message
-        } catch (TelegramApiException e) {
-            Logger.INSTANCE.write(String.format("Error! Can't send a message! %s", e.getMessage()));
-        }
-    }
-
-    @Deprecated
-    private void send(SendAudio audio) {
-        try {
-            execute(audio);
-        } catch (TelegramApiException e) {
-            Logger.INSTANCE.write(String.format("Error! Can't send an audio! %s", e.getMessage()));
-        }
-    }
-
-    @Deprecated
-    private String getFileNameFromTitle(String title) {
-        return title.replaceAll("\\W", "-");
     }
 }
