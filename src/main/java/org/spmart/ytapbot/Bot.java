@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -76,10 +77,13 @@ public class Bot extends TelegramLongPollingBot {
                     AudioSlicer slicer = new AudioSlicer(info);
                     List<AudioInfo> partsInfo = slicer.getAudioParts(MAX_AUDIO_CHUNK_DURATION);
                     sendAll(chatId, partsInfo);
+                    deleteAudio(info);  // cleanup
+                    deleteAudio(partsInfo);
                 } else {
                     send(chatId, "Downloading...");
                     downloader.getAudio();
                     send(chatId, info);
+                    deleteAudio(info);  // cleanup
                 }
 
             } else if (inMessageText.equals("/start")) {
@@ -149,6 +153,31 @@ public class Bot extends TelegramLongPollingBot {
     private void sendAll(long chatId, List<AudioInfo> infos) {
         for (AudioInfo info : infos) {
             send(chatId, info);
+        }
+    }
+
+
+    /**
+     * Removes audio from HDD.
+     * @param info AudioInfo object that contains title, duration, caption and audio path.
+     */
+    private void deleteAudio(AudioInfo info) {
+        Path pathToAudio = Path.of(info.getPath());
+        try {
+            Files.deleteIfExists(pathToAudio);
+        } catch (IOException e) {
+            Logger.INSTANCE.write(String.format("Delete error! File is not exist or busy. %s", e.getMessage()));
+        }
+    }
+
+
+    /**
+     * Removes all audio parts from HDD.
+     * @param infos Collection with AudioInfo objects that contains title, duration, caption and audio path.
+     */
+    private void deleteAudio(List<AudioInfo> infos) {
+        for (AudioInfo info : infos) {
+            deleteAudio(info);
         }
     }
 }
