@@ -87,6 +87,14 @@ public class Downloader {
            info.setPath(DOWNLOAD_PATH);
            info.setDuration(convertDurationToSeconds(processOutput.get(1)));
         }
+
+        /*
+         Workaround for stream detection. YouTube return 0, if stream is running now.
+         Not guarantied. Often YouTube doesn't provide any info about stream at all
+         */
+        if (info.getDuration() > 0) {
+            info.setAvailability(true);  // false by default
+        }
         return info;
     }
 

@@ -43,9 +43,9 @@ public class AudioSlicer {
         for (int partNumber = 0; partNumber < fragmentPaths.size(); partNumber++) {
             String fragmentName = originalAudio.getTitle() + String.format(" Part %d", partNumber);
             if (partNumber == fragmentPaths.size() - 1) {
-                fragments.add(new AudioInfo(fragmentName, lastFragmentDuration, fragmentPaths.get(partNumber)));  // if last path in list, we should set calculated duration
+                fragments.add(new AudioInfo(fragmentName, lastFragmentDuration, fragmentPaths.get(partNumber), true));  // if last path in list, we should set calculated duration
             } else {
-                fragments.add(new AudioInfo(fragmentName, fragmentDuration, fragmentPaths.get(partNumber)));  // if not last element, use default fragment duration
+                fragments.add(new AudioInfo(fragmentName, fragmentDuration, fragmentPaths.get(partNumber), true));  // if not last element, use default fragment duration
             }
         }
         

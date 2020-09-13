@@ -69,7 +69,16 @@ public class Bot extends TelegramLongPollingBot {
                 Downloader downloader = new Downloader(normalizedUrl, audioPath);
                 AudioInfo info = downloader.getAudioInfo();
 
-                if (info.getDuration() > MAX_AUDIO_DURATION) {
+                if (!info.isAvailable() && info.getDuration() <= 0) {  // Streams are not available for us, but sometimes stream contains info with zero in video duration
+                    send(chatId, "Seems like you send a link to stream that's not finished yet. " +
+                            "If so, try again later when the broadcast is over.");
+                } else if (!info.isAvailable()) {
+                    send(chatId, "Audio is not available. Possible reasons:\n " +
+                            "1. Broken link.\n " +
+                            "2. YouTube marked this video as unacceptable for some users.\n " +
+                            "3. Private video.\n " +
+                            "4. This is a link to stream that's not finished yet. If so, try again later.");  // Some streams are not provide any info at all
+                } else if (info.getDuration() > MAX_AUDIO_DURATION) {
                     send(chatId, "It's too long video! My maximum is 5 hours.");
                 } else if (info.getDuration() > MAX_AUDIO_CHUNK_DURATION) {
                     send(chatId, "Downloading and slicing for parts...");
@@ -141,7 +150,9 @@ public class Bot extends TelegramLongPollingBot {
                 send(chatId, "Can't send an audio. May be, file is bigger than 50 MB");  // Double check. If Telegram API stops upload
             }
         } else {
-            send(chatId, "Error downloading audio :( Maybe YouTube marked the video as unacceptable for some users or the link to the video is broken.");
+            send(chatId, "Error downloading audio. This case will be reported to bot developer.");
+            Logger.INSTANCE.write("Download error. Most likely, audio is removed before sending.");  // This error shouldn't appear in other cases. Streams are handled earlier. I need more data.
+            Logger.INSTANCE.write("Audio: " + info.getTitle() + " " + info.getPath());
         }
     }
 

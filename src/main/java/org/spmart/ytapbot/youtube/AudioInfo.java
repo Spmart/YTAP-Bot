@@ -4,6 +4,7 @@ public class AudioInfo {
     private String title;
     private int duration;
     private String path;
+    private boolean isAvailable;
 
     /**
      * Info about audio that received from youtube-dl.
@@ -32,9 +33,20 @@ public class AudioInfo {
      * @param path Path to audio file. Could be relative or absolute.
      */
     public AudioInfo(String title, int duration, String path) {
+        this(title, duration, path, false);
+    }
+    /**
+     * Info about audio that received from youtube-dl.
+     * @param title Audio title.
+     * @param duration Audio duration in seconds.
+     * @param path Path to audio file. Could be relative or absolute.
+     * @param isAvailable Is available to download. "False" by default.
+     */
+    public AudioInfo(String title, int duration, String path, boolean isAvailable) {
         this.title = title;
         this.duration = duration;
         this.path = path;
+        this.isAvailable = isAvailable;
     }
 
     public String getPath() {
@@ -59,5 +71,13 @@ public class AudioInfo {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailability(boolean available) {
+        this.isAvailable = available;
     }
 }
