@@ -63,3 +63,11 @@ The end result should be something like this:
     $ sudo systemctl start ytap.service
     ```
 Now your bot runs in background, automaticly restarts on failure and after server reboot.
+
+9\. **[Optional]** Add a cron job to regularly update youtube-dl. This will prevent errors related to YouTube changes. The cron job looks like this:
+
+```
+0 3 * * * /usr/local/bin/youtube-dl -U >> /var/www/telegrambots/ytap/bot.log
+```
+
+If there is a problem with the update, the information will be logged.
